@@ -79,6 +79,9 @@ void UBattleHUDWidget::BindButtonEvents()
     
     if (PassButton)
         PassButton->OnClicked.AddDynamic(this, &UBattleHUDWidget::OnPassButtonClicked);
+
+    if (RetryButton)
+        RetryButton->OnClicked.AddDynamic(this, &UBattleHUDWidget::OnRetryButtonClicked);
     
     if (RantiButton)
         RantiButton->OnClicked.AddDynamic(this, &UBattleHUDWidget::OnRantiButtonClicked);
@@ -363,7 +366,15 @@ void UBattleHUDWidget::OnPassButtonClicked()
 {
     if (BattleManager)
     {
-        BattleManager->EndCurrentUnitTurn();
+        BattleManager->PassTurn();
+    }
+}
+
+void UBattleHUDWidget::OnRetryButtonClicked()
+{
+    if (BattleManager)
+    {
+        BattleManager->RetryBattle();
     }
 }
 

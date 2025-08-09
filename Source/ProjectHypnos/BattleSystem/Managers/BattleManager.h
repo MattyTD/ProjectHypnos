@@ -132,6 +132,12 @@ public:
     void EndCurrentUnitTurn();
 
     UFUNCTION(BlueprintCallable, Category = "Combat")
+    void PassTurn();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void RetryBattle();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
     void ExecuteAction(const FBattleAction& Action);
 
     UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -182,10 +188,21 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Combat")
     void ResumeBattle();
 
+    // Animation gating for timers
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void BeginActionAnimation();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void EndActionAnimation();
+
 protected:
     void InitializePlayerUnits();
     void InitializeEnemyUnits();
     void StartNextUnitTurn();
     void HandleWeaknessHit(ACombatUnit* Attacker, ACombatUnit* Target, EElementalType ElementType);
     bool CheckBattleEndConditions();
+
+    // If true, the current unit's timer should not tick (e.g., during attack/skill animations)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+    bool bIsActionAnimationPlaying = false;
 };

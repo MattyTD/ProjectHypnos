@@ -79,6 +79,10 @@ public:
     UPROPERTY(meta = (BindWidget))
     class UButton* TransformButton;
 
+    // Retry Button ("1" key icon)
+    UPROPERTY(meta = (BindWidget))
+    class UButton* RetryButton;
+
     // UI Elements - Position Buttons
     UPROPERTY(meta = (BindWidget))
     class UButton* NorthButton;
@@ -142,6 +146,9 @@ public:
     void OnPassButtonClicked();
 
     UFUNCTION(BlueprintCallable, Category = "Battle UI")
+    void OnRetryButtonClicked();
+
+    UFUNCTION(BlueprintCallable, Category = "Battle UI")
     void OnRantiButtonClicked();
 
     UFUNCTION(BlueprintCallable, Category = "Battle UI")
@@ -188,6 +195,13 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Battle UI")
     void UpdateDefenseButtons(EBattlePosition CurrentPosition);
+
+    // Bottom-left movement and info labels (W/A/S/D/T)
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* MoveHelpText;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* TurnOrderHelpText;
 
     UFUNCTION(BlueprintCallable, Category = "Battle UI")
     void ShowTFNStatus(bool bActive, float SpeedMultiplier);

@@ -132,6 +132,10 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
     bool bIsStressedOut = false;
 
+    // Incapacitation (e.g., stun/sleep). Incapacitated or KO'd units cannot act
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+    bool bIsIncapacitated = false;
+
     // Elemental System
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
     TArray<FElementalResistance> ElementalResistances;
@@ -143,6 +147,15 @@ public:
     // Functions
     UFUNCTION(BlueprintCallable, Category = "Combat")
     void ResetTimer();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void ResetForBattle();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    bool CanAct() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void SetIncapacitated(bool bIncapacitated);
 
     UFUNCTION(BlueprintCallable, Category = "Combat")
     bool IsAlive() const;

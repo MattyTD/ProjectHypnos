@@ -31,13 +31,17 @@ void ABattleManager::Tick(float DeltaTime)
 
     if (CurrentBattleState == EBattleState::PlayerTurn && !bIsSetComplete)
     {
-        // Apply TFN effect to timer and decrement the active unit's remaining time
-        float ActualDeltaTime = DeltaTime * TFNSpeedMultiplier;
-
-        if (ACombatUnit* ActiveUnit = GetCurrentUnit())
+        // During action animations, do not tick the timer
+        if (!bIsActionAnimationPlaying)
         {
-            ActiveUnit->TimerRemaining = FMath::Max(0.0f, ActiveUnit->TimerRemaining - ActualDeltaTime);
-            CurrentTimerRemaining = ActiveUnit->TimerRemaining;
+            // Apply TFN effect to timer and decrement the active unit's remaining time
+            float ActualDeltaTime = DeltaTime * TFNSpeedMultiplier;
+
+            if (ACombatUnit* ActiveUnit = GetCurrentUnit())
+            {
+                ActiveUnit->TimerRemaining = FMath::Max(0.0f, ActiveUnit->TimerRemaining - ActualDeltaTime);
+                CurrentTimerRemaining = ActiveUnit->TimerRemaining;
+            }
         }
 
         // Check if current unit's time is up
@@ -69,7 +73,7 @@ void ABattleManager::StartBattle()
     {
         if (Unit)
         {
-            Unit->ResetTimer();
+            Unit->ResetForBattle();
             Unit->SetPosition(EBattlePosition::West); // Start all units in West
         }
     }
@@ -124,11 +128,24 @@ void ABattleManager::EndCurrentUnitTurn()
     }
 }
 
+void ABattleManager::PassTurn()
+{
+    // Explicit pass command from input/UI
+    EndCurrentUnitTurn();
+}
+
 void ABattleManager::StartNextUnitTurn()
 {
     ACombatUnit* CurrentUnit = GetCurrentUnit();
     if (CurrentUnit)
     {
+        // If unit cannot act (KO or incapacitated), immediately skip
+        if (!CurrentUnit->CanAct())
+        {
+            EndCurrentUnitTurn();
+            return;
+        }
+
         // Reset timer for this unit
         CurrentTimerRemaining = CurrentUnit->TimerRemaining;
         
@@ -301,6 +318,39 @@ void ABattleManager::EndEnemyTurn()
     StartNewSet();
 }
 
+void ABattleManager::RetryBattle()
+{
+    // Reset battle state to beginning
+    CurrentBattleState = EBattleState::PlayerTurn;
+    CurrentUnitIndex = 0;
+    CurrentSetNumber = 1;
+    bIsSetComplete = false;
+    bTFNActive = false;
+    TFNSpeedMultiplier = 1.0f;
+    bIsActionAnimationPlaying = false;
+
+    for (ACombatUnit* Unit : PlayerUnits)
+    {
+        if (Unit)
+        {
+            Unit->ResetForBattle();
+            Unit->SetPosition(EBattlePosition::West);
+        }
+    }
+
+    for (ACombatUnit* Enemy : EnemyUnits)
+    {
+        if (Enemy)
+        {
+            Enemy->ResetForBattle();
+            Enemy->SetPosition(EBattlePosition::Center);
+        }
+    }
+
+    StartNextUnitTurn();
+    OnBattleStateChanged(CurrentBattleState);
+}
+
 void ABattleManager::StartNewSet()
 {
     CurrentTimerRemaining = BaseTimerDuration;
@@ -340,6 +390,16 @@ void ABattleManager::ResumeBattle()
 {
     CurrentBattleState = EBattleState::PlayerTurn;
     OnBattleStateChanged(CurrentBattleState);
+}
+
+void ABattleManager::BeginActionAnimation()
+{
+    bIsActionAnimationPlaying = true;
+}
+
+void ABattleManager::EndActionAnimation()
+{
+    bIsActionAnimationPlaying = false;
 }
 
 void ABattleManager::InitializePlayerUnits()

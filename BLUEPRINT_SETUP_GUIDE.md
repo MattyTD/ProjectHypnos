@@ -105,9 +105,10 @@ This guide will walk you through setting up the complete battle system in Unreal
 - **Button** named "AttackButton" (Text: "Attack")
 - **Button** named "SkillButton" (Text: "Skill")
 - **Button** named "ItemButton" (Text: "Item")
-- **Button** named "PassButton" (Text: "Pass")
+- **Button** named "PassButton" (Text: "Pass" / hotkey "N")
 - **Button** named "RantiButton" (Text: "Ranti")
-- **Button** named "TransformButton" (Text: "Transform")
+- **Button** named "TransformButton" (Text: "Transform" / hotkey "E")
+- **Button** named "RetryButton" (Text: "Retry" / hotkey "1")
 
 #### Position Buttons Section (Bottom Center)
 - **Button** named "NorthButton" (Text: "North")
@@ -123,6 +124,10 @@ This guide will walk you through setting up the complete battle system in Unreal
 #### Status Effects Section (Right Side)
 - **Text Block** named "StressedOutText"
 - **Text Block** named "StockpileText"
+
+#### Bottom-Left Movement & Info (always visible)
+- **Text Block** named "MoveHelpText" (e.g., "W/A/S/D to Move; T - Turn Order")
+- **Text Block** named "TurnOrderHelpText" (shows brief enemy order when T is held or toggled)
 
 ### 4.3 Style the UI Elements
 1. **Set colors** for each progress bar:
@@ -188,6 +193,7 @@ Event OnSetComplete()
    - **Position Radius**: 500.0
    - **Center Position**: (0, 0, 0)
 
+
 ### 6.2 Set Up Battle Positions
 1. **In the Details Panel**, expand "Battle Positions"
 2. **Add 4 positions**:
@@ -230,11 +236,17 @@ Event BeginPlay
 ### 9.1 Create Input Actions
 1. **Go to** Project Settings → Input
 2. **Add Action Mappings**:
-   - **Move**: Spacebar
-   - **Attack**: Left Mouse Button
-   - **Skill**: Right Mouse Button
-   - **Item**: I
-   - **Pass**: P
+   - **MoveNorth**: W
+   - **MoveWest**: A
+   - **MoveSouth**: S
+   - **MoveEast**: D
+   - **ShowTurnOrder**: T (toggle/hold)
+   - **EO_or_Skills**: E
+   - **Melee**: Spacebar
+   - **Items**: R
+   - **Ranti**: Q
+   - **Retry**: 1
+   - **Pass**: N
    - **Guard**: G
    - **Dodge**: D
    - **Parry**: F
@@ -243,10 +255,16 @@ Event BeginPlay
 1. **In WBP_BattleHUD**, add input bindings:
 ```
 Event Construct
-├── Bind Action (Move)
-├── Bind Action (Attack)
-├── Bind Action (Skill)
-├── Bind Action (Item)
+├── Bind Action (MoveNorth)
+├── Bind Action (MoveWest)
+├── Bind Action (MoveSouth)
+├── Bind Action (MoveEast)
+├── Bind Action (ShowTurnOrder)
+├── Bind Action (EO_or_Skills)
+├── Bind Action (Melee)
+├── Bind Action (Items)
+├── Bind Action (Ranti)
+├── Bind Action (Retry)
 ├── Bind Action (Pass)
 ├── Bind Action (Guard)
 ├── Bind Action (Dodge)
@@ -265,6 +283,8 @@ Event Construct
 ### 10.2 Test Battle Flow
 1. **Play in Editor**
 2. **Verify**:
+   - Bottom-left movement keys (WASD) move current unit
+   - T shows enemy turn order pop-up
    - Timer counts down
    - Units can move between positions
    - Actions can be performed

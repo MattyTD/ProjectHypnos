@@ -40,6 +40,29 @@ void ACombatUnit::ResetTimer()
     TimerTickRate = 1.0f; // Reset TFN effect
 }
 
+void ACombatUnit::ResetForBattle()
+{
+    CurrentHP = MaxHP;
+    CurrentEO = 0.0f;
+    CurrentMP = 0.0f;
+    bIsInEOForm = false;
+    bIsStressedOut = false;
+    bIsIncapacitated = false;
+    EOGainRate = 1.0f;
+    StockpiledTime = 0.0f;
+    ResetTimer();
+}
+
+bool ACombatUnit::CanAct() const
+{
+    return IsAlive() && !bIsIncapacitated;
+}
+
+void ACombatUnit::SetIncapacitated(bool bIncapacitated)
+{
+    bIsIncapacitated = bIncapacitated;
+}
+
 bool ACombatUnit::IsAlive() const
 {
     return CurrentHP > 0;
